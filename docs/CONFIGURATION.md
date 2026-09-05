@@ -36,6 +36,33 @@ OSC52 clipboard support is enabled by default. Copied text inside shpells is rou
 set -g @grimoire-osc52 'off'
 ```
 
+#### Default copy-mode bindings
+
+While OSC52 is enabled, these vi copy-mode bindings are set:
+
+| Key     | Action                                                          |
+|---------|-----------------------------------------------------------------|
+| `y`     | Yank vim-style: copy the selection to the system clipboard, clear the highlight, and stay in copy mode |
+| `Enter` | Cancel (exit copy mode)                                         |
+
+#### Custom copy bindings
+
+The path to the OSC52 helper is exported as `@grimoire-osc52-copy`, so you can
+wire up your own copy-mode bindings. It reads the selection on stdin and emits
+the OSC52 escape to your terminal.
+
+```tmux
+# Set @grimoire-osc52 'off' first so the defaults above don't override yours,
+# then bind however you like:
+bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "#{@grimoire-osc52-copy}"
+```
+
+> [!NOTE]
+> `copy-pipe`/`copy-pipe-no-clear` keep the pipe open until copy mode exits, so
+> the helper won't flush until you leave copy mode. To copy *and* stay in copy
+> mode, pair `copy-selection` with `run-shell "tmux save-buffer - | #{@grimoire-osc52-copy}"`
+> (this is what the default `y` binding does).
+
 ---
 ## Position Options
 
